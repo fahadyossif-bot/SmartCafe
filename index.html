@@ -2,325 +2,114 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الكافيه المحمي - نسخة الطاولات</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>كافيه وسام</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
-        body { font-family: 'Tajawal', sans-serif; background-color: #fcfcfc; -webkit-tap-highlight-color: transparent; }
-        .tab-content { display: none; }
-        .active-tab { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        button:active { transform: scale(0.96); transition: 0.1s; }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8f9fa; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        .active-tab { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="text-stone-900 leading-relaxed">
-
-    <!-- Navbar -->
-    <nav class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-50">
-        <div class="container mx-auto px-5 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-amber-100 w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow-sm">☕</div>
-                <div class="flex flex-col">
-                    <!-- تم تثبيت الاسم هنا برمجياً -->
-                    <h1 id="ui-cafe-name" class="font-bold text-lg text-stone-800 leading-none"></h1>
-                    <span id="ui-table-number" class="text-[11px] text-amber-600 font-bold mt-1 tracking-wide"></span>
-                </div>
-            </div>
-            <button onclick="showLoginModal()" class="w-10 h-10 flex items-center justify-center bg-stone-50 text-stone-400 rounded-full hover:bg-stone-100 border border-stone-100">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6 mb-32">
-        <div id="tab-menu" class="tab-content active-tab">
-            <div id="cat-nav" class="flex gap-2 overflow-x-auto pb-6 no-scrollbar sticky top-[73px] bg-inherit z-40"></div>
-            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            <div id="empty-state" class="hidden text-center py-20 opacity-40">
-                <div class="text-6xl mb-4">📖</div>
-                <h3 class="text-xl font-bold">المينيو فارغ حالياً...</h3>
+<body class="text-slate-900 select-none">
+    <header class="glass sticky top-0 z-50 p-6 border-b border-white flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center text-2xl text-white shadow-lg shadow-amber-100">☕</div>
+            <div>
+                <h1 class="font-black text-lg text-slate-800">كافيه وسام</h1>
+                <p id="ui-table" class="text-[10px] font-bold text-amber-600 uppercase"></p>
             </div>
         </div>
+    </header>
 
-        <!-- Admin View -->
-        <div id="tab-admin" class="tab-content">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-black text-stone-800">لوحة التحكم</h2>
-                <button onclick="switchTab('menu')" class="px-6 py-2 bg-stone-800 text-white rounded-2xl text-sm font-bold shadow-lg">خروج</button>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-[2.5rem] border border-stone-100 shadow-sm">
-                        <h3 class="font-bold text-lg mb-6 flex items-center gap-2 text-stone-700">⚙️ الإعدادات المحمية</h3>
-                        <div class="space-y-5">
-                            <div>
-                                <label class="text-[11px] text-stone-400 font-black uppercase mb-1 block mr-2 italic text-red-500">اسم الكافيه (مغلق برمجياً)</label>
-                                <input type="text" id="cfg-name-display" disabled class="w-full p-4 bg-stone-100 border border-stone-200 rounded-2xl outline-none text-stone-400 cursor-not-allowed font-bold">
-                            </div>
-                            <div>
-                                <label class="text-[11px] text-stone-400 font-black uppercase mb-1 block mr-2">رقم الواتساب للاستلام</label>
-                                <input type="text" id="cfg-phone" placeholder="9647838399100" class="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl outline-none text-left focus:ring-2 ring-amber-500/20" dir="ltr">
-                            </div>
-                            <div>
-                                <label class="text-[11px] text-stone-400 font-black uppercase mb-1 block mr-2">رمز PIN لوحة الإدارة</label>
-                                <input type="text" id="cfg-pin" class="w-full p-4 bg-stone-50 border border-stone-100 rounded-2xl outline-none focus:ring-2 ring-amber-500/20">
-                            </div>
-                            <button onclick="updateSettings()" class="w-full bg-amber-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-amber-600/20">حفظ التغييرات</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-2 bg-white p-6 rounded-[2.5rem] border border-stone-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-8">
-                        <h3 class="font-bold text-lg text-stone-700">📋 إدارة الأصناف</h3>
-                        <button onclick="showProductModal()" class="bg-stone-900 text-white px-6 py-3 rounded-2xl text-sm font-bold">+ صنف جديد</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-right border-separate border-spacing-y-3">
-                            <tbody id="admin-list"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <main class="p-4 mb-32 max-w-lg mx-auto">
+        <div id="cats" class="flex gap-2 overflow-x-auto pb-4 sticky top-[90px] z-40"></div>
+        <div id="menu" class="grid grid-cols-1 gap-4"></div>
     </main>
 
-    <!-- Footer Basket -->
-    <div id="basket-bar" class="fixed bottom-0 left-0 right-0 p-5 transform translate-y-full transition-all duration-700 z-50">
-        <div class="container mx-auto max-w-xl bg-white/95 backdrop-blur-xl rounded-[2.8rem] shadow-2xl border border-stone-100 p-2.5">
-            <button onclick="sendViaWhatsApp()" class="w-full bg-green-600 text-white h-16 rounded-[2.4rem] flex items-center justify-between px-7 font-bold shadow-lg active:scale-[0.98]">
-                <div class="flex items-center gap-4">
-                    <span class="bg-white/20 w-9 h-9 rounded-full flex items-center justify-center text-sm" id="count-ui">0</span>
-                    <span class="text-lg text-white">إرسال الطلب</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <span id="total-ui" class="text-xl">0</span>
-                    <span class="text-xs opacity-70">د.ع</span>
-                </div>
-            </button>
-        </div>
-    </div>
-
-    <!-- Hidden WA Link -->
-    <a id="wa-link" href="#" style="display:none" target="_blank"></a>
-
-    <!-- Modals -->
-    <div id="login-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-5">
-        <div class="bg-white w-full max-w-xs rounded-[2.5rem] p-10 text-center shadow-2xl">
-            <h3 class="font-bold text-2xl mb-8">دخول الإدارة</h3>
-            <input type="password" id="login-pin" maxlength="8" placeholder="••••" class="w-full text-center text-3xl p-5 bg-stone-50 border rounded-[1.5rem] outline-none mb-6">
-            <button onclick="checkAdminLogin()" class="w-full bg-stone-900 text-white py-5 rounded-[1.5rem] font-bold">دخول</button>
-            <button onclick="hideLoginModal()" class="w-full text-stone-400 mt-4 text-sm font-bold">إلغاء</button>
-        </div>
-    </div>
-
-    <div id="p-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[110] hidden items-center justify-center p-5">
-        <div class="bg-white w-full max-w-md rounded-[3rem] p-8 shadow-2xl">
-            <h3 class="font-bold text-2xl mb-8" id="modal-title">تفاصيل الصنف</h3>
-            <div class="space-y-5">
-                <input type="text" id="p-cat" placeholder="القسم (مثلاً: حلويات)" class="w-full p-4 bg-stone-50 border rounded-2xl outline-none">
-                <input type="text" id="p-name" placeholder="اسم الصنف" class="w-full p-4 bg-stone-50 border rounded-2xl outline-none">
-                <div class="grid grid-cols-3 gap-3">
-                    <input type="number" id="p-s" placeholder="صغير" class="w-full p-3 bg-stone-50 border rounded-xl text-center outline-none">
-                    <input type="number" id="p-m" placeholder="وسط" class="w-full p-3 bg-stone-50 border rounded-xl text-center outline-none">
-                    <input type="number" id="p-l" placeholder="كبير" class="w-full p-3 bg-stone-50 border rounded-xl text-center outline-none">
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button onclick="saveProduct()" class="flex-1 bg-amber-600 text-white py-4 rounded-2xl font-bold">حفظ</button>
-                    <button onclick="hideProductModal()" class="flex-1 bg-stone-100 text-stone-500 py-4 rounded-2xl font-bold">إلغاء</button>
-                </div>
-            </div>
-        </div>
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 p-6 transform translate-y-full transition-all duration-500 z-50">
+        <button onclick="send()" class="w-full bg-green-600 text-white h-16 rounded-[2.2rem] flex items-center justify-between px-8 font-black shadow-2xl">
+            <div class="flex items-center gap-3"><span id="c-count" class="bg-white/20 px-3 py-1 rounded-full text-sm">0</span><span>تأكيد الطلب</span></div>
+            <div class="flex items-center gap-1"><span id="c-total" class="text-xl">0</span><span class="text-[10px] opacity-70">د.ع</span></div>
+        </button>
     </div>
 
     <script>
-        // ==========================================
-        // تعديل اسم الكافيه هنا فقط (لحماية الحقوق)
-        // ==========================================
-        const CAFE_NAME_PROTECTED = "سمارت كافيه"; 
-        // ==========================================
-
-        const DEFAULT_STATE = {
-            config: { whatsapp: "9647838399100", pin: "1234" },
-            products: [
-                { id: 1, category: "مشروبات", name: "شاي", prices: { s: 500, m: 1000, l: 0 } }
-            ]
-        };
-
-        let db = JSON.parse(localStorage.getItem('cafe_secure_v10')) || DEFAULT_STATE;
+        const db = [{"cat":"مشروبات ساخنة","name":"قهوة","prices":{"s":1000,"m":2000,"l":3000}},{"cat":"باردة","name":"كولا","prices":{"s":1000,"m":2000,"l":0}},{"cat":"عام","name":"صنف","prices":{"s":0,"m":0,"l":0}},{"cat":"عام","name":"صنف","prices":{"s":0,"m":0,"l":0}}];
+        const phone = "9647838399100";
+        const cafeName = "كافيه وسام";
         let cart = [];
-        let currentFilter = 'الكل';
-        let editId = null;
-        let tableNumber = "";
-
-        function save() { localStorage.setItem('cafe_secure_v10', JSON.stringify(db)); }
+        let curCat = 'الكل';
+        const table = new URLSearchParams(window.location.search).get('table') || "";
 
         function init() {
-            tableNumber = new URLSearchParams(window.location.search).get('table') || "";
-            // تثبيت الاسم في كل الواجهات من المتغير الثابت
-            document.getElementById('ui-cafe-name').innerText = CAFE_NAME_PROTECTED;
-            document.getElementById('cfg-name-display').value = CAFE_NAME_PROTECTED;
-            
-            if(tableNumber) {
-                document.getElementById('ui-table-number').innerText = "📍 طاولة رقم: " + tableNumber;
-            }
+            if(table) document.getElementById('ui-table').innerText = "📍 الطاولة: " + table;
             render();
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-tab'));
-            document.getElementById(`tab-${tab}`).classList.add('active-tab');
-        }
-
-        function showLoginModal() { document.getElementById('login-modal').classList.replace('hidden', 'flex'); }
-        function hideLoginModal() { document.getElementById('login-modal').classList.replace('flex', 'hidden'); }
-
-        function checkAdminLogin() {
-            if (document.getElementById('login-pin').value === db.config.pin) {
-                hideLoginModal(); switchTab('admin');
-            } else { alert("رمز PIN خاطئ!"); }
         }
 
         function render() {
-            document.getElementById('cfg-phone').value = db.config.whatsapp;
-            document.getElementById('cfg-pin').value = db.config.pin;
-
-            const cats = ['الكل', ...new Set(db.products.map(p => p.category))];
-            document.getElementById('cat-nav').innerHTML = cats.map(c => `
-                <button onclick="setFilter('${c}')" class="px-7 py-2.5 rounded-[1.2rem] border font-bold whitespace-nowrap transition-all ${currentFilter === c ? 'bg-stone-900 text-white shadow-lg' : 'bg-white text-stone-400 border-stone-100'}">
-                    ${c}
-                </button>
+            const categories = ['الكل', ...new Set(db.map(i => i.cat))];
+            document.getElementById('cats').innerHTML = categories.map(c => `
+                <button onclick="setCat('${c}')" class="px-6 py-3 rounded-2xl font-bold whitespace-nowrap ${curCat === c ? 'bg-slate-900 text-white' : 'bg-white text-slate-400' }">${c}</button>
             `).join('');
 
-            const filtered = currentFilter === 'الكل' ? db.products : db.products.filter(p => p.category === currentFilter);
-            const grid = document.getElementById('product-grid');
-            
-            if (filtered.length === 0) {
-                grid.innerHTML = "";
-                document.getElementById('empty-state').classList.remove('hidden');
-            } else {
-                document.getElementById('empty-state').classList.add('hidden');
-                grid.innerHTML = filtered.map(p => `
-                    <div class="bg-white p-6 rounded-[2.5rem] border border-stone-100 shadow-sm">
-                        <h4 class="text-xl font-bold text-stone-800 mb-5">${p.name}</h4>
-                        <div class="space-y-3">
-                            ${renderPriceItem(p, 's', 'صغير')}
-                            ${renderPriceItem(p, 'm', 'وسط')}
-                            ${renderPriceItem(p, 'l', 'كبير')}
-                        </div>
+            const filtered = curCat === 'الكل' ? db : db.filter(i => i.cat === curCat);
+            document.getElementById('menu').innerHTML = filtered.map((item, idx) => `
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-black text-slate-800">${item.name}</h4>
+                        <span class="text-[9px] bg-amber-50 text-amber-600 px-2 py-1 rounded-lg font-black">${item.cat}</span>
                     </div>
-                `).join('');
-            }
-
-            document.getElementById('admin-list').innerHTML = db.products.map(p => `
-                <tr class="bg-stone-50/50">
-                    <td class="p-4 rounded-r-[1.5rem] font-bold text-stone-800">${p.name}</td>
-                    <td class="p-4 text-left rounded-l-[1.5rem]">
-                        <button onclick="editProduct(${p.id})" class="text-amber-600 font-bold ml-5">تعديل</button>
-                        <button onclick="deleteProduct(${p.id})" class="text-red-400 font-bold">حذف</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function renderPriceItem(p, key, label) {
-            if (!p.prices[key] || p.prices[key] === 0) return '';
-            const item = cart.find(c => c.pid === p.id && c.size === key);
-            const qty = item ? item.qty : 0;
-            return `
-                <div class="flex justify-between items-center bg-stone-50 p-3.5 rounded-2xl border border-white">
-                    <span class="text-xs font-bold text-stone-500">${label}: ${p.prices[key].toLocaleString()} د.ع</span>
-                    <div class="flex items-center gap-4">
-                        ${qty > 0 ? `<button onclick="updateCart(${p.id},'${key}',-1)" class="w-9 h-9 rounded-xl bg-white border flex items-center justify-center font-bold">-</button><span class="font-black text-amber-600">${qty}</span>` : ''}
-                        <button onclick="updateCart(${p.id},'${key}',1)" class="w-9 h-9 rounded-xl bg-stone-900 text-white flex items-center justify-center font-bold">+</button>
+                    <div class="space-y-2">
+                        ${renderPrice(item, idx, 's', 'صغير')}
+                        ${renderPrice(item, idx, 'm', 'وسط')}
+                        ${renderPrice(item, idx, 'l', 'كبير')}
                     </div>
                 </div>
-            `;
+            `).join('');
         }
 
-        function setFilter(c) { currentFilter = c; render(); }
+        function renderPrice(item, idx, size, label) {
+            const p = item.prices[size];
+            if(!p) return '';
+            const inCart = cart.find(c => c.id === idx && c.size === size);
+            const q = inCart ? inCart.qty : 0;
+            return `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl">
+                    <span class="text-xs text-slate-500">${label} - ${p.toLocaleString()}</span>
+                    <div class="flex items-center gap-3">
+                        ${q > 0 ? `<button onclick="upd(${idx},'${size}',-1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">-</button><span class="font-bold text-amber-600">${q}</span>` : ''}
+                        <button onclick="upd(${idx},'${size}',1)" class="w-8 h-8 rounded-lg bg-slate-900 text-white">+</button>
+                    </div>
+                </div>`;
+        }
 
-        function updateCart(pid, size, delta) {
-            const p = db.products.find(x => x.id === pid);
-            const idx = cart.findIndex(c => c.pid === pid && c.size === size);
-            if (idx > -1) {
-                cart[idx].qty += delta;
-                if (cart[idx].qty <= 0) cart.splice(idx, 1);
-            } else if (delta > 0) {
-                cart.push({ pid, name: p.name, size, price: p.prices[size], qty: 1 });
-            }
+        function upd(id, size, d) {
+            const item = db[id];
+            const i = cart.findIndex(c => c.id === id && c.size === size);
+            if(i > -1) { cart[i].qty += d; if(cart[i].qty <= 0) cart.splice(i, 1); }
+            else if(d > 0) { cart.push({id, name: item.name, size, price: item.prices[size], qty: 1}); }
             render();
-            const totalItems = cart.reduce((a, b) => a + b.qty, 0);
-            document.getElementById('basket-bar').style.transform = totalItems > 0 ? 'translateY(0)' : 'translateY(100%)';
-            document.getElementById('count-ui').innerText = totalItems;
-            document.getElementById('total-ui').innerText = cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString();
+            const count = cart.reduce((a, b) => a + b.qty, 0);
+            document.getElementById('cart-bar').style.transform = count > 0 ? 'translateY(0)' : 'translateY(100%)';
+            document.getElementById('c-count').innerText = count;
+            document.getElementById('c-total').innerText = cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString();
         }
 
-        function sendViaWhatsApp() {
-            if (cart.length === 0) return;
-            let tableMsg = tableNumber ? `🪑 *رقم الطاولة: ${tableNumber}*\n` : `🛵 *طلب خارجي*\n`;
-            let msg = `*طلب جديد - ${CAFE_NAME_PROTECTED}*\n${tableMsg}\n`;
-            cart.forEach(c => msg += `• ${c.name} (${c.size}) x${c.qty} = ${(c.price * c.qty).toLocaleString()} د.ع\n`);
-            msg += `\n💰 *الإجمالي: ${cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString()} د.ع*`;
-            const url = `https://api.whatsapp.com/send?phone=${db.config.whatsapp.replace(/\D/g, '')}&text=${encodeURIComponent(msg)}`;
-            document.getElementById('wa-link').href = url;
-            document.getElementById('wa-link').click();
-            setTimeout(() => { window.location.assign(url); }, 300);
+        function send() {
+            let m = `*طلب جديد من ${cafeName}*\n`;
+            m += table ? `📍 الطاولة: ${table}\n\n` : `🛵 طلب خارجي\n\n`;
+            cart.forEach(c => m += `• ${c.name} (${c.size}) x${c.qty}\n`);
+            m += `\n💰 *الإجمالي: ${cart.reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString()} د.ع*`;
+            window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(m)}`;
         }
 
-        function updateSettings() {
-            db.config.whatsapp = document.getElementById('cfg-phone').value;
-            db.config.pin = document.getElementById('cfg-pin').value;
-            save(); alert("تم حفظ الإعدادات!");
-        }
-
-        function showProductModal() { editId = null; document.getElementById('p-modal').classList.replace('hidden', 'flex'); }
-        function hideProductModal() { document.getElementById('p-modal').classList.replace('flex', 'hidden'); }
-
-        function saveProduct() {
-            const product = {
-                id: editId || Date.now(),
-                category: document.getElementById('p-cat').value || "عام",
-                name: document.getElementById('p-name').value || "غير مسمى",
-                prices: {
-                    s: parseInt(document.getElementById('p-s').value) || 0,
-                    m: parseInt(document.getElementById('p-m').value) || 0,
-                    l: parseInt(document.getElementById('p-l').value) || 0
-                }
-            };
-            if (editId) {
-                const idx = db.products.findIndex(x => x.id === editId);
-                db.products[idx] = product;
-            } else {
-                db.products.push(product);
-            }
-            save(); hideProductModal(); render();
-        }
-
-        function editProduct(id) {
-            const p = db.products.find(x => x.id === id);
-            editId = id;
-            document.getElementById('p-cat').value = p.category;
-            document.getElementById('p-name').value = p.name;
-            document.getElementById('p-s').value = p.prices.s;
-            document.getElementById('p-m').value = p.prices.m;
-            document.getElementById('p-l').value = p.prices.l;
-            document.getElementById('p-modal').classList.replace('hidden', 'flex');
-        }
-
-        function deleteProduct(id) {
-            if (confirm("حذف هذا الصنف؟")) {
-                db.products = db.products.filter(p => p.id !== id);
-                save(); render();
-            }
-        }
-
+        function setCat(c) { curCat = c; render(); }
         window.onload = init;
     </script>
 </body>
 </html>
-
